@@ -22,3 +22,7 @@ print(args)
 #Get local computer hostname
 hostname = subprocess.run(["hostname"], capture_output=True, text=True).stdout.strip()
 print(hostname)
+
+#Store network interface information
+result = subprocess.run(["ip", "-json", "link", "show"], capture_output=True, text=True)
+print(result.stdout)

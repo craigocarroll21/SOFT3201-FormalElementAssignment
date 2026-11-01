@@ -5,6 +5,7 @@
 #ChatGPT was used to plan the program structure and set up our github link to linux ubuntu terminal. Code will be written by me 
 
 import argparse
+import subprocess
 
 #Create an argument parser to handle command line options
 parser = argparse.ArgumentParser()
@@ -17,3 +18,7 @@ parser.add_argument("-r", action="store_true", help="Run in receive mode (server
 
 args = parser.parse_args()
 print(args)
+
+#Get local computer hostname
+hostname = subprocess.run(["hostname"], capture_output=True, text=True).stdout.strip()
+print(hostname)

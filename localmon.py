@@ -41,15 +41,16 @@ print(args)
 
 #Store network interface details (link)
 try: 
-    link_result = subprocess.run(["ip", "-json", "link", "show"], capture_output=True, text=True, check=True)
-    print("Getting network interfaces...")
-    print(link_result.stdout)
+    link_result = run_command(["ip", "-json", "link", "show"])
+    print("Getting network interface details...")
+    print(link_result)
+
 except subprocess.CalledProcessError as e:
-    print(f"Error getting network innterfaces: {e.returncode}")
+    print(f"Error getting network interfaces: {e.returncode}")
     sys.exit(1)
 
 #Convert JSON output into a Python list
-interfaces = json.loads(link_result.stdout)
+interfaces = json.loads(link_result)
 print(interfaces)
 
 #Get details for first network interface
@@ -71,15 +72,16 @@ print(second_interface["operstate"])
 
 #Store IP address details (address)
 try:
-    address_result = subprocess.run(["ip", "-json", "address", "show"], capture_output=True, text=True, check=True)
+    address_result = run_command(["ip", "-json", "address", "show"])
     print("Getting IP address details...")
-    print(address_result.stdout)
+    print(address_result)
+
 except subprocess.CalledProcessError as e:
     print(f"Error getting IP address details: {e.returncode}")
     sys.exit(1)
 
 #Convert JSON output into a Python list
-address_interfaces = json.loads(address_result.stdout)
+address_interfaces = json.loads(address_result)
 print(address_interfaces)
 
 #Get IP address details for first network interface
@@ -92,15 +94,16 @@ print(second_address_interface["addr_info"])
 
 #Store network routing details (route)
 try:
-    route_result = subprocess.run(["ip", "-json", "route", "show"], capture_output=True, text=True, check=True)
+    route_result = run_command(["ip", "-json", "route", "show"])
     print("Getting network routing details...")
-    print(route_result.stdout)
+    print(route_result)
+
 except subprocess.CalledProcessError as e:
     print(f"Error getting network routing details: {e.returncode}")
     sys.exit(1)
 
 #Convert JSON output into a Python list
-route_interfaces = json.loads(route_result.stdout)
+route_interfaces = json.loads(route_result)
 print(route_interfaces)
 
 #Get routing details for first network interface

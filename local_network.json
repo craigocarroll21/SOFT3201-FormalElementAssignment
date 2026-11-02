@@ -103,8 +103,8 @@
                     "dynamic": true,
                     "noprefixroute": true,
                     "label": "enp0s3",
-                    "valid_life_time": 64483,
-                    "preferred_life_time": 64483
+                    "valid_life_time": 84147,
+                    "preferred_life_time": 84147
                 },
                 {
                     "family": "inet6",

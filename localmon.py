@@ -20,9 +20,14 @@ def get_hostname():
         hostname = run_command(["hostname"]).strip()
         print("Hostname:", hostname)
         return hostname
+
     except subprocess.CalledProcessError as e:
         print(f"Error getting hostname: {e.returncode}")
         sys.exit(1)
+
+#Function to parse network info
+def parse_network_info(data):
+    return json.loads(data)
 
 #Create an argument parser to handle command line options
 parser = argparse.ArgumentParser()
@@ -50,7 +55,7 @@ except subprocess.CalledProcessError as e:
     sys.exit(1)
 
 #Convert JSON output into a Python list
-interfaces = json.loads(link_result)
+interfaces = parse_network_info(link_result)
 print(interfaces)
 
 #Get details for first network interface
@@ -81,7 +86,7 @@ except subprocess.CalledProcessError as e:
     sys.exit(1)
 
 #Convert JSON output into a Python list
-address_interfaces = json.loads(address_result)
+address_interfaces = parse_network_info(address_result)
 print(address_interfaces)
 
 #Get IP address details for first network interface
@@ -103,7 +108,7 @@ except subprocess.CalledProcessError as e:
     sys.exit(1)
 
 #Convert JSON output into a Python list
-route_interfaces = json.loads(route_result)
+route_interfaces = parse_network_info(route_result)
 print(route_interfaces)
 
 #Get routing details for first network interface

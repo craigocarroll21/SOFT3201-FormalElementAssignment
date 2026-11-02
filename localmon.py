@@ -29,6 +29,42 @@ def get_hostname():
 def parse_network_info(data):
     return json.loads(data)
 
+#Function to display netowkr info
+def display_network_info(interfaces, address_interfaces, route_interfaces):
+
+    #Get details for first network interface
+    first_interface = interfaces[0]
+    print(first_interface["ifname"])
+    print(first_interface["mtu"])
+    print(first_interface["address"])
+    print(first_interface["flags"])
+    print(first_interface["operstate"])
+
+    #Get details for second network interface
+    second_interface = interfaces[1]
+    print(second_interface["ifname"])
+    print(second_interface["mtu"])
+    print(second_interface["address"])
+    print(second_interface["flags"])
+    print(second_interface["operstate"])
+
+    #Get IP address details for first network interface
+    first_address_interface = address_interfaces[0]
+    print(first_address_interface["addr_info"])
+
+    #Get IP address details for second network interface
+    second_address_interface = address_interfaces[1]
+    print(second_address_interface["addr_info"])
+
+    #Get routing details for first network interface
+    first_route_interface = route_interfaces[0]
+    print(first_route_interface["dst"])
+    print(first_route_interface["gateway"])
+
+    #Get routing details for second network interface
+    second_route_interface = route_interfaces[1]
+    print(second_route_interface["dst"])
+
 #Create an argument parser to handle command line options
 parser = argparse.ArgumentParser()
 
@@ -37,88 +73,45 @@ parser.add_argument("-t", action="store_true", help="Run in transmit mode (clien
 
 #Add Argument for receive mode -r (server)
 parser.add_argument("-r", action="store_true", help="Run in receive mode (server)")
-
 args = parser.parse_args()
 print(args)
-
-
-
 
 #Store network interface details (link)
 try: 
     link_result = run_command(["ip", "-json", "link", "show"])
     print("Getting network interface details...")
-    print(link_result)
 
 except subprocess.CalledProcessError as e:
     print(f"Error getting network interfaces: {e.returncode}")
     sys.exit(1)
 
-#Convert JSON output into a Python list
-interfaces = parse_network_info(link_result)
-print(interfaces)
-
-#Get details for first network interface
-first_interface = interfaces[0]
-print(first_interface["ifname"])
-print(first_interface["mtu"])
-print(first_interface["address"])
-print(first_interface["flags"])
-print(first_interface["operstate"])
-
-#Get details for second network interface
-second_interface = interfaces[1]
-print(second_interface["ifname"])
-print(second_interface["mtu"])
-print(second_interface["address"])
-print(second_interface["flags"])
-print(second_interface["operstate"])
-
-
 #Store IP address details (address)
 try:
     address_result = run_command(["ip", "-json", "address", "show"])
     print("Getting IP address details...")
-    print(address_result)
 
 except subprocess.CalledProcessError as e:
     print(f"Error getting IP address details: {e.returncode}")
     sys.exit(1)
 
-#Convert JSON output into a Python list
-address_interfaces = parse_network_info(address_result)
-print(address_interfaces)
-
-#Get IP address details for first network interface
-first_address_interface = address_interfaces[0]
-print(first_address_interface["addr_info"])
-
-#Get IP address details for second network interface
-second_address_interface = address_interfaces[1]
-print(second_address_interface["addr_info"])
-
 #Store network routing details (route)
 try:
     route_result = run_command(["ip", "-json", "route", "show"])
     print("Getting network routing details...")
-    print(route_result)
 
 except subprocess.CalledProcessError as e:
     print(f"Error getting network routing details: {e.returncode}")
     sys.exit(1)
 
-#Convert JSON output into a Python list
+#Parse and display network information from JSON results
+interfaces = parse_network_info(link_result)
+
+address_interfaces = parse_network_info(address_result)
+
 route_interfaces = parse_network_info(route_result)
-print(route_interfaces)
 
-#Get routing details for first network interface
-first_route_interface = route_interfaces[0]
-print(first_route_interface["dst"])
-print(first_route_interface["gateway"])
-
-#Get routing details for second network interface
-second_route_interface = route_interfaces[1]
-print(second_route_interface["dst"])
+#Display network information
+display_network_info(interfaces, address_interfaces, route_interfaces)
 
 #Get the local computer hostname
 hostname = get_hostname()

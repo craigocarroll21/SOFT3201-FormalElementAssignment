@@ -22,12 +22,22 @@ args = parser.parse_args()
 print(args)
 
 #Get local computer hostname
-hostname = subprocess.run(["hostname"], capture_output=True, text=True, check=True).stdout.strip()
-print(hostname)
+try:
+    hostname = subprocess.run(["hostname"], capture_output=True, text=True, check=True).stdout.strip()
+    print("Hostname:", hostname)
+except subprocess.CalledProcessError as e:
+    print(f"Error getting hostname: {e.returncode}")
+    sys.exit(1)
+
 
 #Store network interface details (link)
-link_result = subprocess.run(["ip", "-json", "link", "show"], capture_output=True, text=True, check=True)
-print(link_result.stdout)
+try: 
+    link_result = subprocess.run(["ip", "-json", "link", "show"], capture_output=True, text=True, check=True)
+    print("Getting network interfaces...")
+    print(link_result.stdout)
+except subprocess.CalledProcessError as e:
+    print(f"Error getting network innterfaces: {e.returncode}")
+    sys.exit(1)
 
 #Convert JSON output into a Python list
 interfaces = json.loads(link_result.stdout)
@@ -51,8 +61,13 @@ print(second_interface["operstate"])
 
 
 #Store IP address details (address)
-address_result = subprocess.run(["ip", "-json", "address", "show"], capture_output=True, text=True, check=True)
-print(address_result.stdout)
+try:
+    address_result = subprocess.run(["ip", "-json", "address", "show"], capture_output=True, text=True, check=True)
+    print("Getting IP address details...")
+    print(address_result.stdout)
+except subprocess.CalledProcessError as e:
+    print(f"Error getting IP address details: {e.returncode}")
+    sys.exit(1)
 
 #Convert JSON output into a Python list
 address_interfaces = json.loads(address_result.stdout)
@@ -67,8 +82,13 @@ second_address_interface = address_interfaces[1]
 print(second_address_interface["addr_info"])
 
 #Store network routing details (route)
-route_result = subprocess.run(["ip", "-json", "route", "show"], capture_output=True, text=True)
-print(route_result.stdout)
+try:
+    route_result = subprocess.run(["ip", "-json", "route", "show"], capture_output=True, text=True, check=True)
+    print("Getting network routing details...")
+    print(route_result.stdout)
+except subprocess.CalledProcessError as e:
+    print(f"Error getting network routing details: {e.returncode}")
+    sys.exit(1)
 
 #Convert JSON output into a Python list
 route_interfaces = json.loads(route_result.stdout)

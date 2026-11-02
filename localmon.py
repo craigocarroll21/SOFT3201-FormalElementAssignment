@@ -111,5 +111,5 @@ network_info["addresses"] = address_interfaces
 network_info["routes"] = route_interfaces
 
 #Write the network information to a JSON file
-with open("local_network_info.json", "w") as fout:
+with open("local_network.json", "w") as fout:
     json.dump(network_info, fout, indent=4)

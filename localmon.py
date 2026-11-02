@@ -9,6 +9,21 @@ import subprocess
 import json
 import sys
 
+#Function to run a command
+def run_command(command):
+    result = subprocess.run(command, capture_output=True, text=True, check=True)
+    return result.stdout
+
+#Function to get local computer hostname
+def get_hostname():
+    try:
+        hostname = run_command(["hostname"]).strip()
+        print("Hostname:", hostname)
+        return hostname
+    except subprocess.CalledProcessError as e:
+        print(f"Error getting hostname: {e.returncode}")
+        sys.exit(1)
+
 #Create an argument parser to handle command line options
 parser = argparse.ArgumentParser()
 
@@ -21,13 +36,7 @@ parser.add_argument("-r", action="store_true", help="Run in receive mode (server
 args = parser.parse_args()
 print(args)
 
-#Get local computer hostname
-try:
-    hostname = subprocess.run(["hostname"], capture_output=True, text=True, check=True).stdout.strip()
-    print("Hostname:", hostname)
-except subprocess.CalledProcessError as e:
-    print(f"Error getting hostname: {e.returncode}")
-    sys.exit(1)
+
 
 
 #Store network interface details (link)
@@ -102,6 +111,9 @@ print(first_route_interface["gateway"])
 #Get routing details for second network interface
 second_route_interface = route_interfaces[1]
 print(second_route_interface["dst"])
+
+#Get the local computer hostname
+hostname = get_hostname()
 
 #store collected network information in a dictionary
 network_info = {}

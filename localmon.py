@@ -2,7 +2,7 @@
 #localmon.py
 #Author: Craig O Carroll
 #Date: 31/10/2026
-#ChatGPT was used to plan the program structure and set up our github link to linux ubuntu terminal. Code will be written by me 
+#ChatGPT was used to plan the program structure and set up our github link to linux ubuntu terminal. ChatGPT was also used at difficult points to offer guidence with adding and removing parts of code. Code is written by me 
 
 import argparse
 import subprocess
@@ -11,8 +11,22 @@ import sys
 
 #Function to run a command
 def run_command(command):
-    result = subprocess.run(command, capture_output=True, text=True, check=True)
-    return result.stdout
+    try:
+        result = subprocess.run(command, capture_output=True, text=True, check=True)
+        return result.stdout
+
+    except subprocess.CalledProcessError as e:
+        print(f"Error running command: {e}")
+        sys.exit(1)
+    
+    except FileNotFoundError:
+        print("Error: Command not found")
+        sys.exit(1)
+
+    except PermissionError:
+        print("Error: Permission denied")
+        sys.exit(1)
+
 
 #Function to get local computer hostname
 def get_hostname():
@@ -27,7 +41,14 @@ def get_hostname():
 
 #Function to parse network info
 def parse_network_info(data):
-    return json.loads(data)
+    try:
+        if data == "":
+            print("Error: No Network info received")
+            sys.exit(1)
+        return json.loads(data)
+    except json.JSONDecodeError:
+        print("Error: Invalid JSON data")
+        sys.exit(1)
 
 #Function to display netowkr info
 def display_network_info(interfaces, address_interfaces, route_interfaces):
@@ -56,12 +77,12 @@ def display_network_info(interfaces, address_interfaces, route_interfaces):
     second_address_interface = address_interfaces[1]
     print(second_address_interface["addr_info"])
 
-    #Get routing details for first network interface
+    #Get routing details for first network interface route
     first_route_interface = route_interfaces[0]
     print(first_route_interface["dst"])
     print(first_route_interface["gateway"])
 
-    #Get routing details for second network interface
+    #Get routing details for second network interface route
     second_route_interface = route_interfaces[1]
     print(second_route_interface["dst"])
 

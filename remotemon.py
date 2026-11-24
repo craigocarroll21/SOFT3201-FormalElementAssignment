@@ -3,6 +3,7 @@ import socket
 import json
 import subprocess
 import sys
+
 #Function to run a command
 def run_command(command):
     try:
@@ -43,3 +44,18 @@ def parse_network_info(data):
     except json.JSONDecodeError:
         print("Error: Invalid JSON data")
         sys.exit(1)
+
+#Create command line argument parser for client and server modes
+parser = argparse.ArgumentParser()
+mode = parser.add_mutually_exclusive_group()
+mode.add_argument("-r", action="store_true", help="Run in server mode")
+mode.add_argument("-t", action="store_true", help="Run in client mode")
+
+parser.add_argument("-p", type=int, default=7777, help="PORT")
+parser.add_argument("-ip", default="127.0.0.1", help="Server IP")
+
+args = parser.parse_args()
+
+if args.r == False and args.t == False:
+    print("ERROR: Please choose either server mode (-r) or client mode (-t)")
+    sys.exit(1)

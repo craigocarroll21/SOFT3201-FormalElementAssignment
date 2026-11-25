@@ -59,3 +59,13 @@ args = parser.parse_args()
 if args.r == False and args.t == False:
     print("ERROR: Please choose either server mode (-r) or client mode (-t)")
     sys.exit(1)
+
+if args.r:
+    server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    server_socket.bind(("", args.p))
+    server_socket.listen(1)
+    print("Server listening on port", args.p)
+
+    while True:
+        connect_socket, address = server_socket.accept()
+        print("Connection from", address)

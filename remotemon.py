@@ -90,7 +90,26 @@ if args.r:
         request_header = recv_exact(connect_socket, 9)
 
         if not request_header:
-        print("Received request header:", request_header)
             print("Error: Failed to receive request header")
             connect_socket.close()
             continue
+        print("Received request header:", request_header)
+
+        magic, message_type, payload_length = struct.unpack("!4sBI", request_header)
+
+        if magic == b"RMON" and message_type == 1 and payload_length == 0:
+            print("Request header validated")  
+        else:    
+            print("Error: Invalid request header")
+            connect_socket.close()
+            continue
+
+if args.t:
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client_socket.connect((args.ip, args.p))
+    print("Connected to server")
+
+    request_header = struct.pack("!4sBI", b"RMON", 1, 0)
+    client_socket.sendall(request_header)
+
+    

@@ -3,6 +3,8 @@ import socket
 import json
 import subprocess
 import sys
+import struct
+
 
 #Function to run a command
 def run_command(command):
@@ -45,6 +47,19 @@ def parse_network_info(data):
         print("Error: Invalid JSON data")
         sys.exit(1)
 
+def recv_exact(sock, size):
+    data = b""
+
+    while len(data) < size:
+        part = sock.recv(size - len(data))
+
+        if not part:
+            return None
+
+        data += part
+
+    return data
+
 #Create command line argument parser for client and server modes
 parser = argparse.ArgumentParser()
 mode = parser.add_mutually_exclusive_group()
@@ -60,6 +75,8 @@ if args.r == False and args.t == False:
     print("ERROR: Please choose either server mode (-r) or client mode (-t)")
     sys.exit(1)
 
+# Protocol header: 4-byte magic value, 1-byte message type and 4-byte payload length. Total header size is 9 bytes.
+
 if args.r:
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.bind(("", args.p))
@@ -69,3 +86,11 @@ if args.r:
     while True:
         connect_socket, address = server_socket.accept()
         print("Connection from", address)
+
+        request_header = recv_exact(connect_socket, 9)
+
+        if not request_header:
+        print("Received request header:", request_header)
+            print("Error: Failed to receive request header")
+            connect_socket.close()
+            continue

@@ -98,9 +98,20 @@ if args.r:
         magic, message_type, payload_length = struct.unpack("!4sBI", request_header)
 
         if magic == b"RMON" and message_type == 1 and payload_length == 0:
-            print("Request header validated")  
-            response_header = struct.pack("!4sBI", b"RMON", 2, 0)
+            print("Request header validated") 
+
+            hostname = get_hostname()
+            network_info = run_command(["ip", "addr"])
+
+            response_data = {"hostname": hostname, "network_info": network_info} 
+
+            json_text = json.dumps(response_data)
+            json_data = json_text.encode("utf-8")
+
+            response_header = struct.pack("!4sBI", b"RMON", 2, len(json_data))
             connect_socket.sendall(response_header)
+            connect_socket.sendall(json_data)
+
         else:    
             print("Error: Invalid request header")
             connect_socket.close()
@@ -113,7 +124,39 @@ if args.t:
 
     request_header = struct.pack("!4sBI", b"RMON", 1, 0)
     client_socket.sendall(request_header)
+
     response_header = recv_exact(client_socket, 9)
     print("Received response header:", response_header)
+
+    magic, message_type, payload_length = struct.unpack("!4sBI", response_header)
+
+    if magic == b"RMON" and message_type == 2:
+        print("Response header validated")
+    else:
+        print("Error: Invalid response header")
+        client_socket.close()
+        sys.exit(1)
+    
+    if payload_length == 4096:
+        print("Error: Payload too large")
+        client_socket.close()
+        sys.exit(1)
+    
+    json_data = recv_exact(client_socket, payload_length)
+
+    if not json_data:
+        print("Error: Failed to receive JSON data")
+        client_socket.close()
+        sys.exit(1)
+
+    print("Received JSON size:", len(json_data), "bytes")
+
+    json_text = json_data.decode("utf-8")
+    received_data = json.loads(json_text)
+
+    print("Received data:", received_data)
+
+    with open("remote_network.json", "w") as file:
+        json.dump(received_data, file, indent=4)
 
     

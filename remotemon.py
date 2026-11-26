@@ -99,6 +99,8 @@ if args.r:
 
         if magic == b"RMON" and message_type == 1 and payload_length == 0:
             print("Request header validated")  
+            response_header = struct.pack("!4sBI", b"RMON", 2, 0)
+            connect_socket.sendall(response_header)
         else:    
             print("Error: Invalid request header")
             connect_socket.close()
@@ -111,5 +113,7 @@ if args.t:
 
     request_header = struct.pack("!4sBI", b"RMON", 1, 0)
     client_socket.sendall(request_header)
+    response_header = recv_exact(client_socket, 9)
+    print("Received response header:", response_header)
 
     
